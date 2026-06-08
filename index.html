@@ -662,7 +662,24 @@ function showResult(type, iconHtml, bodyHtml) {
   document.getElementById('resultBody').innerHTML = bodyHtml;
 }
 
-async function handleSubmit() {
+function callGAS(params) {
+  return new Promise((resolve, reject) => {
+    const cbName = "cb_" + Date.now();
+    const script = document.createElement("script");
+    const qs = Object.entries(params).map(([k,v]) => k + "=" + encodeURIComponent(v)).join("&");
+    script.src = GAS_URL + "?" + qs + "&callback=" + cbName;
+    script.onerror = () => reject(new Error("Network error"));
+    window[cbName] = (data) => {
+      delete window[cbName];
+      document.body.removeChild(script);
+      resolve(data);
+    };
+    document.body.appendChild(script);
+    setTimeout(() => reject(new Error("Timeout")), 15000);
+  });
+}
+
+window.handleSubmit = async function handleSubmit() {
   const token   = document.getElementById('botToken').value.trim();
   const telegramId = document.getElementById('telegramId').value.trim();
   const hwid    = document.getElementById('hwid').value.trim().toUpperCase();
@@ -708,11 +725,7 @@ async function handleSubmit() {
   setStep(2);
 
   try {
-    const url  = GAS_URL + "?action=register&token=" + encodeURIComponent(token)
-                       + "&telegramId=" + encodeURIComponent(telegramId)
-                       + "&days=" + days;
-    const resp = await fetch(url);
-    const data = await resp.json();
+    const data = await callGAS({ action: "register", token, telegramId, days });
     btn.disabled = false;
     btn.classList.remove('loading');
 
@@ -780,7 +793,7 @@ function copyKey(key) {
 
 // Enter để submit
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') handleSubmit();
+  if (e.key === 'Enter') window.handleSubmit();
 });
 </script>
 </body>
