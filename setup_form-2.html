@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bot Setup — Kích Hoạt Bản Quyền</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--surface:#111118;--border:#1e1e2e;--border2:#2a2a3e;--accent:#6d28d9;--glow:#8b5cf6;--green:#10b981;--red:#ef4444;--yellow:#f59e0b;--text:#f1f5f9;--muted:#94a3b8;--dim:#475569;--mono:'JetBrains Mono',monospace;--sans:'Be Vietnam Pro',sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(109,40,217,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(109,40,217,.06) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.wrapper{position:relative;z-index:1;width:100%;max-width:480px}
+.header{text-align:center;margin-bottom:28px}
+.logo{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;background:linear-gradient(135deg,var(--accent),var(--glow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--glow));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;-webkit-text-fill-color:white;flex-shrink:0;box-shadow:0 0 20px rgba(109,40,217,.4)}
+h1{font-size:clamp(20px,5vw,26px);font-weight:700;margin-bottom:8px}
+.subtitle{font-size:13px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px 24px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.field{margin-bottom:18px}
+label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:7px}
+label .tag{font-family:var(--mono);font-size:10px;background:rgba(109,40,217,.15);color:var(--glow);border:1px solid rgba(109,40,217,.2);padding:2px 6px;border-radius:4px}
+input[type=text],input[type=number]{width:100%;background:var(--bg);border:1.5px solid var(--border2);border-radius:12px;padding:13px 16px;font-family:var(--mono);font-size:13px;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(109,40,217,.12)}
+input::placeholder{color:var(--dim)}
+.hint{font-size:11.5px;color:var(--dim);margin-top:5px}
+.hint a{color:var(--glow);text-decoration:none}
+.btn-submit{width:100%;padding:15px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--accent),var(--glow));color:white;font-family:var(--sans);font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:4px}
+.btn-submit:hover{transform:translateY(-1px);box-shadow:0 8px 32px rgba(109,40,217,.5)}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.result{display:none;margin-top:16px;border-radius:14px;overflow:hidden}
+.result.show{display:block}
+.result-header{padding:12px 16px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.result.success .result-header{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.2);border-bottom:none;border-radius:14px 14px 0 0}
+.result.error   .result-header{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);border-bottom:none;border-radius:14px 14px 0 0}
+.result-body{padding:14px 16px;border:1px solid;border-top:none;border-radius:0 0 14px 14px;font-size:13px;color:var(--muted);line-height:1.6}
+.result.success .result-body{border-color:rgba(16,185,129,.2);background:rgba(16,185,129,.04)}
+.result.error   .result-body{border-color:rgba(239,68,68,.2);background:rgba(239,68,68,.04)}
+.key-box{background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;padding:12px;margin:10px 0}
+.key-label{font-size:10px;font-family:var(--mono);color:var(--dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.key-value{font-family:var(--mono);font-size:12px;color:var(--glow);word-break:break-all;line-height:1.6}
+.btn-copy{width:100%;padding:10px;border-radius:10px;border:1.5px solid rgba(16,185,129,.3);background:rgba(16,185,129,.08);color:var(--green);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-copy:hover{background:rgba(16,185,129,.15)}
+.next-steps{margin-top:16px;padding:14px;background:rgba(109,40,217,.06);border:1px solid rgba(109,40,217,.15);border-radius:12px}
+.next-steps h4{font-size:11px;color:var(--glow);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;font-family:var(--mono)}
+.next-steps ol{padding-left:16px}
+.next-steps li{font-size:12.5px;color:var(--muted);line-height:1.7}
+.next-steps li code{font-family:var(--mono);color:var(--glow);background:rgba(109,40,217,.1);padding:1px 5px;border-radius:4px;font-size:11px}
+.footer{text-align:center;margin-top:20px;font-size:12px;color:var(--dim)}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="header">
+    <div class="logo"><div class="logo-icon">🤖</div>Bot License System</div>
+    <h1>Đăng Ký & Kích Hoạt Bot</h1>
+    <p class="subtitle">Điền thông tin để nhận Key kích hoạt ngay lập tức</p>
+  </div>
+
+  <div class="card">
+    <div class="field">
+      <label>🔑 Bot Token <span class="tag">BotFather</span></label>
+      <input type="text" id="botToken" placeholder="1234567890:AABBccDDeeFFgg..." autocomplete="off" spellcheck="false">
+      <div class="hint">Lấy từ <a href="https://t.me/BotFather" target="_blank">@BotFather</a> → /mybots → chọn bot → API Token</div>
+    </div>
+
+    <div class="field">
+      <label>👤 Telegram ID <span class="tag">Của bạn</span></label>
+      <input type="number" id="telegramId" placeholder="123456789">
+      <div class="hint">Nhắn tin cho <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a> để lấy ID</div>
+    </div>
+
+    <button class="btn-submit" id="submitBtn">⚡ Đăng ký & Nhận Key ngay</button>
+
+    <div class="result" id="resultPanel">
+      <div class="result-header" id="resultIcon"></div>
+      <div class="result-body" id="resultBody"></div>
+    </div>
+
+    <div class="next-steps" id="nextSteps" style="display:none">
+      <h4>📋 Bước tiếp theo</h4>
+      <ol>
+        <li>Copy key ở trên</li>
+        <li>Mở bot Telegram của bạn</li>
+        <li>Gõ lệnh <code>/activate KEY_VỪA_COPY</code></li>
+        <li>Gõ <code>/start</code> để bắt đầu 🎉</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="footer">Hệ thống xử lý tự động · Dữ liệu được mã hóa HMAC-SHA256</div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// THAY URL NÀY BẰNG URL GOOGLE APPS SCRIPT CỦA BẠN
+var GAS_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+// ══════════════════════════════════════════════
+
+function showResult(type, icon, body) {
+  var panel = document.getElementById('resultPanel');
+  panel.className = 'result show ' + type;
+  document.getElementById('resultIcon').innerHTML = icon;
+  document.getElementById('resultBody').innerHTML = body;
+}
+
+function copyKey(key) {
+  navigator.clipboard.writeText(key).then(function() {
+    var btn = document.getElementById('copyBtn');
+    if (btn) { btn.textContent = '✅ Đã copy!'; setTimeout(function(){ btn.textContent = '📋 Copy Key'; }, 2000); }
+  });
+}
+
+function callGAS(params, onSuccess, onError) {
+  var cbName = 'cb_' + Date.now() + '_' + Math.floor(Math.random()*9999);
+  var script = document.createElement('script');
+  var qs = '';
+  for (var k in params) {
+    qs += (qs ? '&' : '') + k + '=' + encodeURIComponent(params[k]);
+  }
+  script.src = GAS_URL + '?' + qs + '&callback=' + cbName;
+  var timer = setTimeout(function() {
+    delete window[cbName];
+    if (document.body.contains(script)) document.body.removeChild(script);
+    onError('Timeout — kiểm tra lại GAS URL');
+  }, 15000);
+  window[cbName] = function(data) {
+    clearTimeout(timer);
+    delete window[cbName];
+    if (document.body.contains(script)) document.body.removeChild(script);
+    onSuccess(data);
+  };
+  script.onerror = function() {
+    clearTimeout(timer);
+    delete window[cbName];
+    onError('Không kết nối được GAS — kiểm tra URL');
+  };
+  document.body.appendChild(script);
+}
+
+document.getElementById('submitBtn').onclick = function() {
+  var token      = document.getElementById('botToken').value.trim();
+  var telegramId = document.getElementById('telegramId').value.trim();
+  var btn        = document.getElementById('submitBtn');
+
+  if (!token || !telegramId) {
+    showResult('error', '❌ Thiếu thông tin', 'Vui lòng điền đầy đủ Bot Token và Telegram ID.');
+    return;
+  }
+  if (!/^\d+:[A-Za-z0-9_\-]{35,}$/.test(token)) {
+    showResult('error', '❌ Token sai định dạng', 'Bot Token phải có dạng <code>1234567890:AABBcc...</code><br>Kiểm tra lại từ @BotFather.');
+    return;
+  }
+  if (!/^\d{5,15}$/.test(telegramId)) {
+    showResult('error', '❌ Telegram ID không hợp lệ', 'Telegram ID chỉ gồm chữ số. Nhắn @userinfobot để lấy.');
+    return;
+  }
+  if (GAS_URL.indexOf('PASTE_YOUR') !== -1) {
+    showResult('error', '❌ Chưa cấu hình', 'Admin chưa cấu hình hệ thống. Vui lòng liên hệ Admin.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Đang xử lý...';
+
+  callGAS(
+    { action: 'register', token: token, telegramId: telegramId, days: 30 },
+    function(data) {
+      btn.disabled = false;
+      btn.textContent = '⚡ Đăng ký & Nhận Key ngay';
+      if (data.success) {
+        var key = data.key;
+        showResult('success', '✅ Đăng ký thành công!',
+          '<div class="key-box">'
+          + '<div class="key-label">🔑 Key kích hoạt của bạn</div>'
+          + '<div class="key-value" id="keyVal">' + key + '</div>'
+          + '</div>'
+          + '<button class="btn-copy" id="copyBtn" onclick="copyKey(\'' + key + '\')">📋 Copy Key</button>'
+          + '<div style="margin-top:8px;font-size:12px;color:#f59e0b">⏳ Hạn sử dụng: ' + data.days + ' ngày (đến ' + data.expiresAt + ')</div>'
+        );
+        document.getElementById('nextSteps').style.display = 'block';
+      } else {
+        showResult('error', '❌ Lỗi', data.error || 'Vui lòng thử lại.');
+      }
+    },
+    function(err) {
+      btn.disabled = false;
+      btn.textContent = '⚡ Đăng ký & Nhận Key ngay';
+      showResult('error', '❌ Lỗi kết nối', err);
+    }
+  );
+};
+</script>
+</body>
+</html>
